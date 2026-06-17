@@ -1,0 +1,55 @@
+# ============================================================
+# .gitignore cho du an ANN - Danh gia nguy co mac benh tim
+# ============================================================
+
+# --- Moi truong ao (QUAN TRONG NHAT) ---
+# Thu muc venv rat nang (vai tram MB) va tuy may. Moi nguoi tu tao lai
+# bang lenh: python -m venv venv  ->  pip install -r requirements.txt
+venv/
+.venv/
+env/
+ENV/
+
+# --- File Python bien dich ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# --- Model da huan luyen (file nang, tu sinh ra khi chay train.py) ---
+# Khong nen day model len Git. Ai can thi chay lai train.py de tao.
+# Neu nhom MUON luu 1 model cuoi cung de nop bai, co the xoa 2 dong duoi
+# hoac them ngoai le, vi du:  !saved_models/best_model.h5
+saved_models/*.h5
+saved_models/*.keras
+saved_models/*.png
+
+# --- Du lieu (tuy nhom quyet dinh) ---
+# Neu file du lieu nho va muon chia se cho ca nhom thi GIU LAI (xoa dong duoi).
+# Neu du lieu lon hoac rieng tu thi bo comment dong duoi de bo qua:
+# data/*.csv
+
+# --- Jupyter Notebook ---
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# --- File cau hinh IDE / editor ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- File he dieu hanh ---
+.DS_Store          # macOS
+Thumbs.db          # Windows
+desktop.ini        # Windows
+
+# --- File tam, log ---
+*.log
+*.tmp
+.cache/
+
+# --- File moi truong bi mat (neu co API key, mat khau...) ---
+.env
+*.key
+kaggle.json        # tranh day nham API key Kaggle len Git
