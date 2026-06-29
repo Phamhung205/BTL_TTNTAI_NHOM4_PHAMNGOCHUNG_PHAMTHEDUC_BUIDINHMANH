@@ -1,0 +1,21 @@
+KET QUA DANH GIA MO HINH ANN TREN TAP TEST
+=============================================
+accuracy    : 0.7377
+precision   : 0.7576
+recall      : 0.7576
+f1_score    : 0.7576
+roc_auc     : 0.8496
+
+Confusion matrix [[TN, FP], [FN, TP]]:
+[[20  8]
+ [ 8 25]]
+
+Classification report:
+                precision    recall  f1-score   support
+
+Khong benh (0)       0.71      0.71      0.71        28
+   Co benh (1)       0.76      0.76      0.76        33
+
+      accuracy                           0.74        61
+     macro avg       0.74      0.74      0.74        61
+  weighted avg       0.74      0.74      0.74        61

@@ -96,6 +96,16 @@ def main():
     print(f"\nDa luu model tot nhat  -> {best_path}")
     print(f"Da luu model cuoi cung -> {final_path}")
 
+    # ---- 6b. Lưu lịch sử huấn luyện ra file (phục vụ trực quan hóa Chương 5) ----
+    # (bổ sung bởi Mạnh: visualization.py sẽ đọc file này để vẽ accuracy/loss curve)
+    import json
+    os.makedirs("results", exist_ok=True)
+    history_path = os.path.join("results", "history.json")
+    with open(history_path, "w", encoding="utf-8") as f:
+        json.dump({k: [float(v) for v in vals] for k, vals in history.history.items()},
+                  f, ensure_ascii=False, indent=2)
+    print(f"Da luu lich su huan luyen -> {history_path}")
+
     # ---- 7. Đánh giá trên tập test ----
     print("\n===== Danh gia tren tap test =====")
     results = model.evaluate(X_test, y_test, verbose=0)

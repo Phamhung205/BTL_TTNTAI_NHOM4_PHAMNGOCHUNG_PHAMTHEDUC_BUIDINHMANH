@@ -1,0 +1,73 @@
+% =====================================================================
+% CHUONG 6 - KET LUAN VA HUONG PHAT TRIEN
+% Tac gia: Bui Dinh Manh (Evaluation Engineer & Documentation)
+% Cach dung: them \input{chuong6} vao main.tex.
+% Neu dung documentclass{article}, doi \chapter -> \section.
+% =====================================================================
+
+\chapter{Kết luận và hướng phát triển}
+\label{chap:conclusion}
+
+\section{Kết luận}
+Đề tài \textbf{"Đánh giá nguy cơ mắc bệnh tim bằng Mạng nơ-ron nhân tạo (ANN)"}
+đã được thực hiện hoàn chỉnh theo đúng quy trình của một dự án học máy:
+\begin{enumerate}
+  \item \textbf{Dữ liệu:} thu thập bộ Heart Disease (Kaggle), tiền xử lý kỹ
+        lưỡng -- phát hiện và loại bỏ \textbf{723 bản ghi trùng lặp} (còn 302
+        bản duy nhất), xử lý ngoại lệ, chuẩn hoá đặc trưng và chia tập
+        train/test 80/20.
+  \item \textbf{Mô hình:} thiết kế và huấn luyện Mạng nơ-ron nhân tạo nhiều tầng
+        ($13 \to 64 \to 32 \to 16 \to 1$) với ReLU, Sigmoid, Adam, Binary
+        Crossentropy và Early Stopping.
+  \item \textbf{Đánh giá:} mô hình đạt \textbf{Accuracy $\approx 0.74$},
+        \textbf{F1-Score $\approx 0.76$} và \textbf{ROC-AUC $\approx 0.85$} trên
+        tập test; thử nghiệm 4 cấu hình siêu tham số và chọn được mô hình tốt
+        nhất (\textbf{ANN-3}, F1 $\approx 0.79$, Recall $\approx 0.82$).
+\end{enumerate}
+
+\textbf{Kết quả cho thấy:} mạng nơ-ron nhân tạo là một hướng tiếp cận
+\textbf{khả thi và hiệu quả} cho bài toán sàng lọc nguy cơ bệnh tim từ dữ liệu
+y tế dạng bảng, với khả năng phân tách hai lớp tốt (ROC-AUC $\approx 0.85$).
+
+\section{Đóng góp của đề tài}
+\begin{itemize}
+  \item Xây dựng được một \textbf{pipeline hoàn chỉnh, tự động} từ dữ liệu thô
+        đến kết quả đánh giá (\texttt{python main.py all}), có tổ chức mã nguồn
+        rõ ràng, chú thích đầy đủ.
+  \item Chỉ ra và xử lý đúng vấn đề \textbf{dữ liệu trùng lặp gây rò rỉ dữ liệu}
+        -- một lỗi phổ biến dễ làm kết quả bị "ảo".
+  \item Cung cấp bộ công cụ \textbf{đánh giá và trực quan hóa} đầy đủ (các chỉ
+        số, Confusion Matrix, ROC, biểu đồ so sánh) phục vụ phân tích.
+\end{itemize}
+
+\section{Hạn chế}
+\begin{itemize}
+  \item \textbf{Kích thước dữ liệu nhỏ:} sau khi loại trùng chỉ còn 302 bản
+        ghi, hạn chế khả năng học của mạng nơ-ron và làm kết quả dao động giữa
+        các cấu hình.
+  \item \textbf{Dữ liệu cũ (từ 1988)} và có một số giá trị bất thường về mã hoá
+        (\texttt{ca = 4}, \texttt{thal = 0}), có thể không phản ánh đầy đủ thực
+        tế hiện nay.
+  \item Mô hình mới dừng ở mức \textbf{sàng lọc/hỗ trợ}, chưa thể thay thế chẩn
+        đoán y khoa.
+\end{itemize}
+
+\section{Hướng phát triển}
+\begin{itemize}
+  \item \textbf{Mở rộng dữ liệu:} thu thập thêm dữ liệu thực tế, cập nhật và đa
+        dạng hơn để tăng độ chính xác và khả năng tổng quát.
+  \item \textbf{Thử nghiệm mô hình \& kỹ thuật khác:} so sánh ANN với các mô
+        hình như Random Forest, XGBoost; áp dụng k-fold cross-validation, cân
+        bằng dữ liệu, tinh chỉnh siêu tham số tự động (Grid/Random Search).
+  \item \textbf{Giải thích mô hình (Explainable AI):} dùng SHAP/feature
+        importance để giải thích yếu tố nào ảnh hưởng đến dự đoán -- quan trọng
+        trong y tế.
+  \item \textbf{Triển khai ứng dụng:} đóng gói mô hình thành web/app cho phép
+        nhập chỉ số và trả về cảnh báo nguy cơ, hỗ trợ bác sĩ và người dùng.
+\end{itemize}
+
+\section{Lời kết}
+Qua đề tài, nhóm đã vận dụng được kiến thức môn Trí tuệ nhân tạo vào một bài
+toán y tế thực tiễn, nắm vững quy trình xây dựng -- huấn luyện -- đánh giá một
+mô hình học máy, đồng thời rèn luyện kỹ năng làm việc nhóm và quản lý mã nguồn
+bằng Git.

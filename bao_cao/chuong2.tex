@@ -1,0 +1,130 @@
+% =====================================================================
+% CHUONG 2 - CO SO LY THUYET
+% Tac gia: Bui Dinh Manh (Evaluation Engineer & Documentation)
+% Cach dung: them \input{chuong2} vao main.tex.
+% Neu dung documentclass{article}, doi \chapter -> \section.
+% =====================================================================
+
+\chapter{Cơ sở lý thuyết}
+\label{chap:theory}
+
+\section{Trí tuệ nhân tạo (Artificial Intelligence -- AI)}
+\textbf{Trí tuệ nhân tạo} là lĩnh vực của khoa học máy tính nghiên cứu việc tạo
+ra các hệ thống có khả năng thực hiện những nhiệm vụ vốn đòi hỏi trí thông minh
+của con người, như nhận dạng hình ảnh, hiểu ngôn ngữ, ra quyết định và dự đoán.
+AI bao gồm nhiều nhánh, trong đó \textbf{Học máy (Machine Learning)} là nhánh
+phát triển mạnh mẽ và được ứng dụng rộng rãi nhất hiện nay.
+
+\section{Học máy (Machine Learning -- ML)}
+\textbf{Học máy} là phương pháp giúp máy tính "học" quy luật từ dữ liệu thay vì
+được lập trình cứng bằng các quy tắc cố định. Có ba nhóm chính:
+\begin{itemize}
+  \item \textbf{Học có giám sát (Supervised Learning):} học từ dữ liệu đã gán
+        nhãn để dự đoán nhãn cho dữ liệu mới (phân loại, hồi quy). \emph{Bài toán
+        của đề tài thuộc nhóm này -- phân loại nhị phân.}
+  \item \textbf{Học không giám sát (Unsupervised Learning):} tìm cấu trúc ẩn
+        trong dữ liệu chưa gán nhãn (phân cụm, giảm chiều).
+  \item \textbf{Học tăng cường (Reinforcement Learning):} học qua tương tác và
+        phần thưởng.
+\end{itemize}
+Bài toán đánh giá nguy cơ bệnh tim là bài toán \textbf{phân loại nhị phân}
+(binary classification): đầu ra là 1 (có nguy cơ) hoặc 0 (không có nguy cơ).
+
+\section{Mạng nơ-ron nhân tạo (Artificial Neural Network -- ANN)}
+\textbf{Mạng nơ-ron nhân tạo} là mô hình tính toán mô phỏng cách hoạt động của
+các nơ-ron thần kinh trong não người. ANN gồm các \textbf{nơ-ron (neuron)} được
+tổ chức thành nhiều \textbf{tầng (layer)}:
+\begin{itemize}
+  \item \textbf{Tầng đầu vào (Input Layer):} nhận vector đặc trưng (ở đề tài là
+        13 đặc trưng).
+  \item \textbf{Các tầng ẩn (Hidden Layers):} trích xuất và biến đổi đặc trưng;
+        càng nhiều tầng/nơ-ron, mạng càng học được quan hệ phức tạp.
+  \item \textbf{Tầng đầu ra (Output Layer):} đưa ra kết quả dự đoán (1 nơ-ron
+        với hàm Sigmoid cho phân loại nhị phân).
+\end{itemize}
+
+Mỗi kết nối giữa hai nơ-ron có một \textbf{trọng số (weight)}, mỗi nơ-ron có
+thêm một \textbf{độ lệch (bias)}. Giá trị tại một nơ-ron được tính bằng:
+\begin{equation}
+  z = \sum_{i=1}^{n} w_i x_i + b, \qquad a = f(z)
+\end{equation}
+trong đó $f$ là \textbf{hàm kích hoạt}. Quá trình tính toán từ đầu vào đến đầu ra
+gọi là \textbf{lan truyền tiến (Forward Propagation)}.
+
+\section{Hàm kích hoạt (Activation Function)}
+Hàm kích hoạt đưa tính \textbf{phi tuyến} vào mạng, giúp ANN học được các quan
+hệ phức tạp. Hai hàm dùng trong đề tài:
+\begin{itemize}
+  \item \textbf{ReLU (Rectified Linear Unit):} $f(z) = \max(0, z)$. Dùng ở các
+        tầng ẩn vì tính toán nhanh, giảm hiện tượng \emph{vanishing gradient} so
+        với sigmoid/tanh.
+  \item \textbf{Sigmoid:} $f(z) = \dfrac{1}{1 + e^{-z}}$, cho giá trị trong
+        khoảng $(0, 1)$. Dùng ở tầng đầu ra để biểu diễn \textbf{xác suất}
+        thuộc lớp "có nguy cơ"; ngưỡng 0.5 dùng để quy về nhãn 0/1.
+\end{itemize}
+
+\section{Hàm mất mát (Loss Function)}
+\textbf{Hàm mất mát} đo độ sai lệch giữa dự đoán và nhãn thực tế. Với phân loại
+nhị phân, dùng \textbf{Binary Crossentropy (Log Loss)}:
+\begin{equation}
+  L = -\frac{1}{N} \sum_{i=1}^{N} \Big[ y_i \log(\hat{y}_i) + (1-y_i)\log(1-\hat{y}_i) \Big]
+\end{equation}
+trong đó $y$ là nhãn thực, $\hat{y}$ là xác suất dự đoán. Giá trị loss càng nhỏ
+thì mô hình dự đoán càng chính xác.
+
+\section{Lan truyền ngược (Backpropagation)}
+\textbf{Backpropagation} là thuật toán cốt lõi để huấn luyện ANN. Ý tưởng:
+\begin{enumerate}
+  \item \textbf{Forward:} tính đầu ra và giá trị loss.
+  \item \textbf{Backward:} tính \textbf{gradient} (đạo hàm) của loss theo từng
+        trọng số, lan truyền ngược từ tầng đầu ra về tầng đầu vào theo quy tắc
+        chuỗi (chain rule).
+  \item \textbf{Cập nhật trọng số} theo hướng giảm loss (gradient descent):
+        \begin{equation}
+          w \leftarrow w - \eta \cdot \frac{\partial L}{\partial w}
+        \end{equation}
+        với $\eta$ là \textbf{tốc độ học (learning rate)}.
+\end{enumerate}
+Quá trình lặp lại qua nhiều \textbf{epoch} (lượt duyệt toàn bộ dữ liệu) cho đến
+khi mô hình hội tụ.
+
+\section{Bộ tối ưu (Optimizer) -- Adam}
+\textbf{Adam (Adaptive Moment Estimation)} là bộ tối ưu cải tiến của gradient
+descent, kết hợp \textbf{momentum} và \textbf{điều chỉnh tốc độ học thích nghi}
+cho từng tham số. Adam hội tụ nhanh, ổn định và ít phải tinh chỉnh thủ công, nên
+được chọn cho mô hình. Tốc độ học sử dụng là $0.001$, kích thước batch $32$.
+
+\section{Quá khớp (Overfitting) và kỹ thuật chống quá khớp}
+\textbf{Overfitting} xảy ra khi mô hình học "thuộc lòng" dữ liệu train mà kém
+tổng quát trên dữ liệu mới (loss train thấp nhưng loss validation cao). Các kỹ
+thuật chống:
+\begin{itemize}
+  \item \textbf{Early Stopping:} theo dõi loss trên tập validation, dừng huấn
+        luyện khi loss không cải thiện sau một số epoch (patience) và giữ lại
+        trọng số tốt nhất.
+  \item \textbf{Regularization (L2):} thêm thành phần phạt vào loss để hạn chế
+        trọng số lớn.
+  \item \textbf{Dropout:} ngẫu nhiên "tắt" một phần nơ-ron khi huấn luyện
+        (tuỳ chọn).
+  \item \textbf{Chia tập dữ liệu hợp lý} và \textbf{loại bỏ dữ liệu trùng} để
+        tránh rò rỉ dữ liệu.
+\end{itemize}
+
+\section{Các chỉ số đánh giá mô hình phân loại}
+Dựa trên \textbf{ma trận nhầm lẫn (Confusion Matrix)} với 4 đại lượng: TP (dự
+đoán đúng có bệnh), TN (đúng không bệnh), FP (báo nhầm có bệnh), FN (bỏ sót ca
+có bệnh).
+\begin{itemize}
+  \item \textbf{Accuracy} $= \dfrac{TP + TN}{\text{Tổng}}$ -- tỷ lệ dự đoán đúng
+        tổng thể.
+  \item \textbf{Precision} $= \dfrac{TP}{TP + FP}$ -- độ chính xác của dự đoán
+        "có bệnh".
+  \item \textbf{Recall (Sensitivity)} $= \dfrac{TP}{TP + FN}$ -- khả năng phát
+        hiện ca có bệnh (đặc biệt quan trọng trong y tế, vì bỏ sót bệnh nhân rất
+        nguy hiểm).
+  \item \textbf{F1-Score} $= \dfrac{2 \cdot Precision \cdot Recall}{Precision +
+        Recall}$ -- trung bình điều hòa, cân bằng giữa Precision và Recall.
+  \item \textbf{ROC-AUC:} diện tích dưới đường ROC, đo khả năng phân tách hai
+        lớp ở mọi ngưỡng (0.5 = ngẫu nhiên, 1.0 = hoàn hảo).
+\end{itemize}
+Các chỉ số này được dùng để đánh giá và so sánh các mô hình ở \textbf{Chương 5}.

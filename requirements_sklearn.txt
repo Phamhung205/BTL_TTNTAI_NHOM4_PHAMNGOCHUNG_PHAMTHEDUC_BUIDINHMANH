@@ -1,0 +1,20 @@
+# =====================================================================
+# Bo thu vien cho NHANH DANH GIA bang scikit-learn (KHONG can TensorFlow).
+# Dung cho may KHONG cai duoc TensorFlow (vi du Python 3.13/3.14, hoac bi
+# Windows Smart App Control chan DLL cua TensorFlow).
+#
+# Cac phien ban duoc GHIM CO DINH vi:
+#   - Tuong thich Python 3.12.
+#   - On dinh, pho bien rong rai (tranh bi Smart App Control chan DLL).
+#   - scipy==1.11.4 de tranh loi chan file numpy.fft._pocketfft_umath.
+#
+# Cai dat:  pip install -r requirements_sklearn.txt
+# =====================================================================
+
+numpy==1.26.4
+pandas==2.2.3
+scipy==1.11.4
+scikit-learn==1.5.2
+matplotlib==3.9.2
+seaborn==0.13.2
+joblib==1.4.2
