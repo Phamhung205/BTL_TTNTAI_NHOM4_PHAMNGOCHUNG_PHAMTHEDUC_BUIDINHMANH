@@ -1,0 +1,156 @@
+% =====================================================================
+% CHUONG 4 - THIET KE VA HUAN LUYEN MO HINH ANN
+% Tac gia: Pham Ngoc Hung (Nhom truong - Model Engineer)
+% Cach dung: them \input{chuong4} vao main.tex.
+% Yeu cau goi cac package: booktabs.
+% Neu dung documentclass{article}, doi \chapter -> \section.
+% =====================================================================
+
+\chapter{Thiết kế và huấn luyện mô hình ANN}
+\label{chap:model}
+
+Mã nguồn: \texttt{src/model.py}, \texttt{src/data\_loader.py},
+\texttt{src/train.py} (bản scikit-learn tương đương:
+\texttt{src/train\_ann.py}).
+
+\section{Bài toán và yêu cầu đối với mô hình}
+Sau khi dữ liệu đã được tiền xử lý ở Chương~\ref{chap:data} (302 bản ghi sạch,
+13 đặc trưng đã chuẩn hoá, nhãn \texttt{target} 0/1), nhiệm vụ của chương này
+là thiết kế một \textbf{mạng nơ-ron nhân tạo (ANN)} giải bài toán \textbf{phân
+loại nhị phân}:
+\begin{itemize}
+  \item \textbf{Đầu vào:} vector 13 đặc trưng y tế của một bệnh nhân.
+  \item \textbf{Đầu ra:} xác suất bệnh nhân \emph{có nguy cơ mắc bệnh tim}
+        (giá trị trong khoảng 0--1; ngưỡng 0.5 để quy về nhãn 0/1).
+\end{itemize}
+Yêu cầu thiết kế: mô hình đủ sức học quan hệ phi tuyến giữa các chỉ số y tế,
+nhưng \textbf{không quá lớn} so với lượng dữ liệu khiêm tốn (302 mẫu) để tránh
+quá khớp (overfitting).
+
+\section{Kiến trúc mạng}
+Mô hình dùng kiến trúc \textbf{Sequential} (các tầng xếp tuần tự), cài đặt
+trong \texttt{src/model.py} bằng hàm \texttt{build\_model()}:
+\begin{center}
+  Input(13) $\to$ Dense(64, ReLU) $\to$ Dense(32, ReLU) $\to$
+  Dense(16, ReLU) $\to$ Dense(1, Sigmoid)
+\end{center}
+
+\begin{table}[h]
+\centering
+\caption{Các tầng của mô hình ANN}
+\label{tab:layers}
+\begin{tabular}{lccl}
+\toprule
+Tầng & Số nơ-ron & Hàm kích hoạt & Vai trò \\
+\midrule
+Input    & 13 & --      & Nhận vector 13 đặc trưng đã chuẩn hoá \\
+Hidden 1 & 64 & ReLU    & Trích xuất đặc trưng tổng quát \\
+Hidden 2 & 32 & ReLU    & Nén và kết hợp đặc trưng \\
+Hidden 3 & 16 & ReLU    & Cô đọng thông tin trước khi ra quyết định \\
+Output   & 1  & Sigmoid & Xác suất "có nguy cơ" trong $[0,1]$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Lý do lựa chọn:}
+\begin{itemize}
+  \item \textbf{Số nơ-ron giảm dần (64 $\to$ 32 $\to$ 16):} mạng "nén" dần
+        thông tin, học đặc trưng từ tổng quát đến cô đọng --- kiến trúc hình
+        phễu phổ biến cho dữ liệu bảng.
+  \item \textbf{ReLU ở tầng ẩn:} tính toán nhanh, giảm hiện tượng
+        \emph{vanishing gradient} so với sigmoid/tanh (Chương~\ref{chap:theory}).
+  \item \textbf{Sigmoid ở tầng ra:} đầu ra là xác suất, phù hợp phân loại nhị
+        phân và hàm mất mát Binary Crossentropy.
+  \item Hàm \texttt{build\_model()} được viết \textbf{tham số hoá}
+        (\texttt{hidden\_units}, \texttt{dropout\_rate},
+        \texttt{learning\_rate}) để dễ dàng thử nghiệm nhiều cấu hình ở
+        Chương~\ref{chap:results}.
+\end{itemize}
+
+Tổng số tham số học của mô hình:
+$13{\times}64 + 64 + 64{\times}32 + 32 + 32{\times}16 + 16 + 16{\times}1 + 1
+= \textbf{3\,521}$ tham số --- nhỏ gọn, phù hợp với 302 mẫu dữ liệu.
+
+\section{Cấu hình huấn luyện}
+Cấu hình được khai báo tập trung ở đầu \texttt{src/train.py}:
+
+\begin{table}[h]
+\centering
+\caption{Cấu hình huấn luyện mô hình}
+\label{tab:trainconfig}
+\begin{tabular}{lll}
+\toprule
+Thành phần & Giá trị & Ghi chú \\
+\midrule
+Hàm mất mát        & Binary Crossentropy & Chuẩn cho phân loại nhị phân \\
+Bộ tối ưu          & Adam                & Hội tụ nhanh, ổn định \\
+Learning rate      & 0.001               & Giá trị khuyến nghị của Adam \\
+Batch size         & 32                  & Cân bằng tốc độ/độ ổn định gradient \\
+Epochs tối đa      & 100                 & Early Stopping sẽ dừng sớm \\
+Validation split   & 20\% của tập train  & Theo dõi overfitting khi huấn luyện \\
+Metrics theo dõi   & Acc., AUC, Prec., Recall & Khai báo khi compile \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Quy trình huấn luyện}
+Quy trình trong \texttt{src/train.py} gồm các bước:
+\begin{enumerate}
+  \item \textbf{Đọc và chia dữ liệu} qua \texttt{data\_loader.load\_data()}:
+        đọc file \texttt{data/heart.csv} (đã tiền xử lý ở
+        Chương~\ref{chap:data}), tách X/y và chia \textbf{80/20} với
+        \texttt{stratify=y} (giữ tỷ lệ hai lớp cân bằng giữa train và test),
+        \texttt{random\_state = 42} (kết quả lặp lại được).
+  \item \textbf{Dựng mô hình} bằng \texttt{build\_model(input\_dim=13)}.
+  \item \textbf{Huấn luyện} với hai callback quan trọng:
+        \begin{itemize}
+          \item \textbf{EarlyStopping} (\texttt{monitor="val\_loss"},
+                \texttt{patience=10}, \texttt{restore\_best\_weights=True}):
+                nếu \texttt{val\_loss} không cải thiện sau 10 epoch liên tiếp
+                thì dừng và khôi phục bộ trọng số tốt nhất --- chống
+                overfitting và tiết kiệm thời gian.
+          \item \textbf{ModelCheckpoint} (\texttt{save\_best\_only=True}):
+                tự động lưu mô hình có \texttt{val\_loss} thấp nhất ra
+                \texttt{saved\_models/best\_model.h5}.
+        \end{itemize}
+  \item \textbf{Lưu kết quả:} mô hình cuối (\texttt{ann\_model.h5}), lịch sử
+        huấn luyện (\texttt{results/history.json} --- phục vụ vẽ biểu đồ ở
+        Chương~\ref{chap:results}) và biểu đồ accuracy/loss.
+  \item \textbf{Đánh giá nhanh} trên tập test bằng \texttt{model.evaluate()}.
+\end{enumerate}
+
+\section{Bản cài đặt tương đương bằng scikit-learn}
+Do máy thực nghiệm của nhóm bị \textbf{Windows Smart App Control} chặn thư viện
+TensorFlow (chi tiết ở Chương~\ref{chap:results}), nhóm cài đặt thêm một bản
+huấn luyện \textbf{tương đương} bằng scikit-learn trong
+\texttt{src/train\_ann.py}:
+\begin{itemize}
+  \item Dùng \texttt{MLPClassifier} với \textbf{cùng kiến trúc}
+        \texttt{hidden\_layer\_sizes=(64, 32, 16)}, \texttt{activation="relu"},
+        solver \textbf{Adam}, \texttt{learning\_rate\_init=0.001},
+        \texttt{batch\_size=32} --- khớp từng siêu tham số với bản Keras.
+  \item Huấn luyện bằng vòng lặp \texttt{partial\_fit} theo từng epoch, tự tính
+        log loss/accuracy trên train và validation sau mỗi epoch (tương đương
+        \texttt{history} của Keras) và tự cài \textbf{Early Stopping}
+        (patience = 10 theo val\_loss, giữ bản sao mô hình tốt nhất).
+  \item Kết quả lưu tại \texttt{saved\_models/ann\_sklearn.joblib} và
+        \texttt{results/history.json} --- \textbf{cùng định dạng} với bản
+        Keras, nên toàn bộ khâu đánh giá/trực quan hóa
+        (Chương~\ref{chap:results}) dùng chung không cần sửa.
+\end{itemize}
+Về mặt toán học, hai bản cài đặt cùng tối ưu hàm mất mát log loss (Binary
+Crossentropy) bằng Adam trên cùng kiến trúc mạng, nên kết quả tương đương nhau;
+khác biệt chỉ nằm ở thư viện thực thi.
+
+\section{Kết quả huấn luyện}
+Mô hình hội tụ và \textbf{dừng sớm tại epoch 38} nhờ Early Stopping. Đường
+accuracy/loss theo epoch, các chỉ số chi tiết trên tập test và so sánh giữa các
+cấu hình siêu tham số được trình bày đầy đủ trong
+Chương~\ref{chap:results} --- Kết quả thực nghiệm.
+
+\section{Kết luận chương}
+Chương 4 đã hoàn thành việc thiết kế và huấn luyện mô hình ANN cho bài toán
+đánh giá nguy cơ bệnh tim: kiến trúc $13 \to 64 \to 32 \to 16 \to 1$
+(ReLU/Sigmoid), huấn luyện bằng Adam + Binary Crossentropy với Early Stopping
+và ModelCheckpoint, mã nguồn tham số hoá để dễ thử nghiệm cấu hình. Mô hình đã
+sẵn sàng cho khâu đánh giá và so sánh ở Chương~\ref{chap:results}.
